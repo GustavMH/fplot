@@ -17,20 +17,17 @@ def split_dict(d, keys):
     return [*[[k,v] for k,v in d.items() if k in keys][0],
             dict([[k,v] for k,v in d.items() if k not in keys])]
 
-# getattr should remove the if chunk
 def subplots(t, val, axs, dims, args):
     for idx in dim_range(*dims):
-        if t == "plot"   : idx_ref(axs, idx).plot   (*idx_ref(val, idx), **args)
-        if t == "img"    : idx_ref(axs, idx).imshow ( idx_ref(val, idx), **args)
-        if t == "scatter": idx_ref(axs, idx).scatter(*idx_ref(val, idx), **args)
-        if t == "bar"    : idx_ref(axs, idx).bar    (*idx_ref(val, idx), **args)
+        if t == "img": idx_ref(axs, idx).imshow ( idx_ref(val, idx), **args)
+        else: getattr(idx_ref(axs, idx), t)(*idx_ref(val, idx), **args)
 
 def stack(*layers):
-    shape    = get_shape(list(layers[0].values())[0])[:len(shape)-2]
-    fig, axs = plt.subplots(*[1,*shape][-2:])
+    shape    = get_shape(list(layers[0].values())[0])
+    fig, axs = plt.subplots(*[1,*shape[:len(shape)-2]][-2:])
     for l in layers:
         t, val, args = split_dict(l, ["plot", "img", "scatter", "bar"])
-        subplots(t, val, axs, shape, args)
+        subplots(t, val, axs, shape[:len(shape)-2], args)
 
 def fplot(*args, style_=None):
     stack(*args)
