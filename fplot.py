@@ -17,9 +17,7 @@ def stack(*layers):
         args   = [[k,v] for k,v in l.items() if k not in ["plot", "img", "scatter", "bar"]]
         subplots(t, flat_n(val, len(shape)), axs, dict(args))
 
-def fplot(*args, style_=None):
+def fplot(*args, style={}):
     stack(*args)
-    style = style_ if style_ else {}
     for k, v in style.items():
-        {"title":  plt.title,  "ylabel": plt.ylabel,
-         "xlabel": plt.xlabel, "legend": plt.legend}[k](v)
+        getattr(plt, k)(v)
