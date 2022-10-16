@@ -24,10 +24,11 @@ def subplots(t, val, axs, dims, args):
 
 def stack(*layers):
     shape    = get_shape(list(layers[0].values())[0])
-    fig, axs = plt.subplots(*[1,*shape[:len(shape)-2]][-2:])
+    # Maybe the axs getter can be replaced by flattening the input and axs
+    fig, axs = plt.subplots(*shape[:-2])
     for l in layers:
         t, val, args = split_dict(l, ["plot", "img", "scatter", "bar"])
-        subplots(t, val, axs, shape[:len(shape)-2], args)
+        subplots(t, val, axs, shape[:-2], args)
 
 def fplot(*args, style_=None):
     stack(*args)
