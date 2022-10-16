@@ -11,9 +11,7 @@ def subplots(t, val, axs, args):
 
 def stack(*layers):
     shape = get_shape(list(layers[0].values())[0])[:-2]
-    axs_  = plt.subplots(*shape)[1]
-    print(len(shape), axs_[0])
-    axs   = flat_n(axs_, len(shape))
+    axs   = flat_n(plt.subplots(*shape)[1], len(shape))
     for l in layers:
         t, val = [[k,v] for k,v in l.items() if k     in ["plot", "img", "scatter", "bar"]][0]
         args   = [[k,v] for k,v in l.items() if k not in ["plot", "img", "scatter", "bar"]]
