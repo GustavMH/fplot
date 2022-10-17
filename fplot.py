@@ -11,7 +11,8 @@ def subplots(t, val, axs, args={}):
 
 def stack(*layers):
     shape = get_shape(layers[0][1])[:-2]
-    axs   = flat_n(plt.subplots(*shape)[1], len(shape))
+    correction = -1 if shape[0] == 1 else 0
+    axs   = flat_n(plt.subplots(*shape)[1], len(shape) + correction)
     for t, val, *args in layers:
         subplots(t, flat_n(val, len(shape)), axs, *args)
 
