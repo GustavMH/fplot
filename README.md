@@ -1,4 +1,4 @@
-A wrapper for matplotlib that manages plot mutation
+A wrapper for matplotlib for multiplots
 
 ``` python
 multiplot("scatter", 
