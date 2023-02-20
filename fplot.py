@@ -1,22 +1,47 @@
 #!/usr/bin/env python3
 import matplotlib.pyplot as plt
 
-flat_n = lambda lsts, n: lsts if n <= 1 else flat_n([e for sl in lsts for e in sl], n-1)
-get_shape = lambda lst: (len(lst), *get_shape(lst[0])) if isinstance(lst, list) else ()
+def get_shape(lsts):
+    """ Returns the shape of a nested list ala Numpy """
+    if hasattr(lst, '__iter__'):
+        return (len(lst), *get_shape(lst[0]))
+    else:
+        return ()
 
-def subplots(t, val, axs, args={}):
-    for ax, v in zip(axs, val):
-        if t == "img": ax.imshow (v, **args)
+def flatten(lsts):
+    """ Flatten a list of lists once """
+    return [e for sl in lsts for e in sl]
+
+def flatten_to_depth(lsts, n):
+    """ Structure a list to be nested at depth n """
+    dims = len(get_shape(lsts))
+    if dims > n: return flat_nd(flatten(lsts), n)
+    if dims < n: return flat_nd([lsts], n)
+    return lsts
+
+def multiplot(t, vals, args={}, style={}):
+    """ Plot multiple plot in one figure
+
+    Args:
+        t: string annotating the type of plot
+        vals: list (x, y) or image data to be plotted
+        args: arguments to be passed to the AxisSubplot
+        style: arguments to be passed to the figure
+    """
+    shape    = get_shape(val)[:-2]
+    fig, axs = plt.subplots(*shape)
+    axs_ = flatten_to_depth(axs, 1)
+    val_ = flatten_to_depth(val, 3)
+    for ax, v in zip(axs_, val_):
+        if t == "imshow": ax.imshow(v, **args)
         else: getattr(ax, t)(*v, **args)
-
-def stack(*layers):
-    shape = get_shape(layers[0][1])[:-2]
-    correction = -1 if shape[0] == 1 else 0
-    axs   = flat_n(plt.subplots(*shape)[1], len(shape) + correction)
-    for t, val, *args in layers:
-        subplots(t, flat_n(val, len(shape)), axs, *args)
-
-def fplot(*args, style={}):
-    stack(*args)
+        ax.label_outer()
     for k, v in style.items():
         getattr(plt, k)(v)
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    # From https://stackoverflow.com/questions/312443/how-do-i-split-a-list-into-equally-sized-chunks
+    # Useful for making plots from a list
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
